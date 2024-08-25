@@ -19,10 +19,16 @@ services:
     image: yandex/clickhouse-server:latest
     container_name: clickhouse
     ports:
-      - "8123:8123"  # Porta para a HTTP interface
+      - "8123:8123"
     volumes:
-      - clickhouse_data:/var/lib/clickhouse  # Persistência de dados
-    restart: always
+      - clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse_config/users.xml:/etc/clickhouse-server/users.xml
+      - ./init-clickhouse.sh:/init-clickhouse.sh
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    entrypoint: /init-clickhouse.sh 
+    restart: on-failure
 
 volumes:
   minio_data:
